@@ -19,7 +19,7 @@ jobs:
           lipo -archs build/Midpoint.app/Contents/MacOS/Midpoint | grep -q arm64
           lipo -archs build/Midpoint.app/Contents/MacOS/Midpoint | grep -q x86_64
           codesign --verify --verbose build/Midpoint.app
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Midpoint-${{ github.sha }}
           path: dist/Midpoint.zip
