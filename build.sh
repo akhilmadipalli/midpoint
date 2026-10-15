@@ -1,18 +1,35 @@
 #!/bin/sh
-# Builds Midpoint.app.  Usage: ./build.sh [--install]
+# Builds Midpoint.app.
 #
-# Signing: uses $MIDPOINT_SIGN_IDENTITY, else your first "Apple Development"/"Developer ID" identity,
-# else ad-hoc. A real identity keeps macOS's Accessibility permission across rebuilds; with ad-hoc
-# signing you must re-enable Midpoint in Accessibility after every rebuild.
+#   ./build.sh             build for this Mac into build/Midpoint.app
+#   ./build.sh --install   build, then copy to /Applications (quits a running copy first)
+#   ./build.sh --release   universal (arm64 + x86_64) build, packaged into dist/ as .zip, .dmg and SHA256SUMS
+#
+# Signing: uses $MIDPOINT_SIGN_IDENTITY if set. Otherwise local builds use your first "Apple Development"
+# or "Developer ID Application" identity, and release builds use a "Developer ID Application" identity.
+# With neither, the app is signed ad-hoc, and macOS asks for Accessibility again after each rebuild.
 set -e
 cd "$(dirname "$0")"
+
+VERSION=$(cat VERSION)
 APP=build/Midpoint.app
-VERSION=0.3.0
+MODE="$1"
+MIN_MACOS=14.0
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
-swiftc -O -o "$APP/Contents/MacOS/Midpoint" Sources/*.swift
+
+if [ "$MODE" = "--release" ]; then
+  for arch in arm64 x86_64; do
+    swiftc -O -target "$arch-apple-macos$MIN_MACOS" -o "build/Midpoint-$arch" Sources/*.swift
+  done
+  lipo -create -output "$APP/Contents/MacOS/Midpoint" build/Midpoint-arm64 build/Midpoint-x86_64
+  rm build/Midpoint-arm64 build/Midpoint-x86_64
+else
+  swiftc -O -target "$(uname -m)-apple-macos$MIN_MACOS" -o "$APP/Contents/MacOS/Midpoint" Sources/*.swift
+fi
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -25,26 +42,46 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleVersion</key><string>$VERSION</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>LSUIElement</key><true/>
-  <key>LSMinimumSystemVersion</key><string>14.0</string>
+  <key>LSMinimumSystemVersion</key><string>$MIN_MACOS</string>
   <key>NSPrincipalClass</key><string>NSApplication</string>
   <key>NSHumanReadableCopyright</key><string>MIT License</string>
 </dict></plist>
 PLIST
 
+if [ "$MODE" = "--release" ]; then
+  IDENTITY_PATTERN='Developer ID Application'
+else
+  IDENTITY_PATTERN='Apple Development|Developer ID Application'
+fi
 IDENTITY="${MIDPOINT_SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null \
-  | sed -nE 's/.*"((Apple Development|Developer ID Application):[^"]*)".*/\1/p' | head -1)}"
+  | sed -nE "s/.*\"(($IDENTITY_PATTERN):[^\"]*)\".*/\1/p" | head -1)}"
 if [ -n "$IDENTITY" ]; then
-  codesign --force --options runtime --sign "$IDENTITY" "$APP"
+  codesign --force --options runtime --timestamp=none --sign "$IDENTITY" "$APP"
   echo "Signed with: $IDENTITY"
 else
   codesign --force --sign - "$APP"
-  echo "Signed ad-hoc (re-enable Midpoint in Accessibility after each rebuild)"
+  echo "Signed ad-hoc"
 fi
-echo "Built $APP"
+echo "Built $APP ($VERSION)"
 
-if [ "$1" = "--install" ]; then
-  pkill -x Midpoint || true
-  rm -rf /Applications/Midpoint.app
-  cp -R "$APP" /Applications/
-  echo "Installed /Applications/Midpoint.app"
-fi
+case "$MODE" in
+  --install)
+    pkill -x Midpoint || true
+    rm -rf /Applications/Midpoint.app
+    cp -R "$APP" /Applications/
+    echo "Installed /Applications/Midpoint.app"
+    ;;
+  --release)
+    rm -rf dist && mkdir dist
+    ditto -c -k --keepParent "$APP" "dist/Midpoint-$VERSION.zip"
+    STAGE=build/dmg && rm -rf "$STAGE" && mkdir -p "$STAGE"
+    cp -R "$APP" "$STAGE/" && ln -s /Applications "$STAGE/Applications"
+    hdiutil create -quiet -volname "Midpoint $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO "dist/Midpoint-$VERSION.dmg"
+    rm -rf "$STAGE"
+    # Unversioned copies give stable "latest" URLs: .../releases/latest/download/Midpoint.zip
+    cp "dist/Midpoint-$VERSION.zip" dist/Midpoint.zip
+    cp "dist/Midpoint-$VERSION.dmg" dist/Midpoint.dmg
+    (cd dist && shasum -a 256 Midpoint*.zip Midpoint*.dmg > SHA256SUMS)
+    echo "Packaged:" && ls -1 dist
+    ;;
+esac

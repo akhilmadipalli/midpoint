@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an idea for Midpoint
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like Midpoint to do?
+      description: Describe the gesture, setting, or behavior, and the problem it solves for you.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything else?
+      description: Workarounds you use today, apps it should work with, screenshots…

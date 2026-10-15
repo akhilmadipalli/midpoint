@@ -6,6 +6,13 @@
 
 <p align="center">Middle click on your Mac trackpad: a three-finger click or a three-finger tap.</p>
 
+<p align="center">
+  <a href="https://github.com/akhilmadipalli/midpoint/releases/latest"><img src="https://img.shields.io/github/v/release/akhilmadipalli/midpoint" alt="Latest release"></a>
+  <a href="https://github.com/akhilmadipalli/midpoint/actions/workflows/ci.yml"><img src="https://github.com/akhilmadipalli/midpoint/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-blue" alt="macOS 14+">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/akhilmadipalli/midpoint" alt="MIT license"></a>
+</p>
+
 ---
 
 Midpoint is a small, free, open-source menu bar app for macOS. With it you can open links in background
@@ -20,24 +27,54 @@ tabs, close browser tabs, paste in Terminal, or pan in CAD apps without a mouse.
 
 - macOS 14 Sonoma or later (Apple silicon or Intel)
 - Built-in or Magic Trackpad
-- Xcode or the Command Line Tools (`xcode-select --install`) to build
 
-## Install (build from source)
+## Install
+
+Pick whichever you like; they all install the same app to `/Applications`.
+
+**Homebrew**
+
+```sh
+brew install --cask akhilmadipalli/tap/midpoint
+```
+
+**curl**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/akhilmadipalli/midpoint/main/scripts/install.sh | bash
+```
+
+The script downloads the latest release, verifies its SHA-256 checksum, installs it, and opens it.
+Set `MIDPOINT_VERSION=0.3.0` to pin a version or `MIDPOINT_APPDIR=~/Applications` to install elsewhere.
+
+**DMG**
+
+Download [**Midpoint.dmg**](https://github.com/akhilmadipalli/midpoint/releases/latest/download/Midpoint.dmg)
+(or the `.zip`) from the [latest release](https://github.com/akhilmadipalli/midpoint/releases/latest),
+open it, and drag Midpoint to Applications.
+
+> Midpoint isn't notarized by Apple yet, so the first time you open a downloaded copy macOS says it
+> "cannot verify" the app. Click **Done**, then go to **System Settings → Privacy & Security**, scroll down and
+> click **Open Anyway**. (Homebrew and the curl script skip this step.)
+
+**Build from source**
+
+Needs Xcode or the Command Line Tools (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/akhilmadipalli/midpoint.git
 cd midpoint
-./build.sh --install          # builds and copies Midpoint.app to /Applications
+./build.sh --install
 open /Applications/Midpoint.app
 ```
+
+### Grant Accessibility access
 
 On first launch macOS asks for **Accessibility** access, which Midpoint needs to send middle clicks.
 Turn Midpoint on in **System Settings → Privacy & Security → Accessibility**. It starts working
 within a second; no relaunch needed.
 
-> **Signing note:** `build.sh` signs with your Apple Development / Developer ID certificate if you have one
-> (or set `MIDPOINT_SIGN_IDENTITY`). Without a certificate it signs ad-hoc, and macOS forgets the
-> Accessibility permission each time you rebuild: remove Midpoint from the Accessibility list and add it again.
+After updating to a new version, if middle clicks stop working, turn Midpoint off and on again in that list.
 
 ## Usage
 
@@ -81,8 +118,14 @@ Everything is in [`Sources/main.swift`](Sources/main.swift) (engine) and [`Sourc
 
 ## Uninstall
 
-Quit Midpoint from the menu bar, delete `/Applications/Midpoint.app`, and remove it from
-Privacy & Security → Accessibility.
+- **Homebrew:** `brew uninstall --cask --zap midpoint`
+- **Anything else:** `curl -fsSL https://raw.githubusercontent.com/akhilmadipalli/midpoint/main/scripts/install.sh | bash -s -- --uninstall`,
+  or quit Midpoint, delete `/Applications/Midpoint.app`, and remove it from Privacy & Security → Accessibility.
+
+## Contributing
+
+Bug reports, ideas, and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) to get started, and
+please follow the [code of conduct](CODE_OF_CONDUCT.md). Security issues: see [SECURITY.md](SECURITY.md).
 
 ## License
 

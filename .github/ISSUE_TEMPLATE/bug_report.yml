@@ -1,0 +1,46 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: e.g. macOS 26.1
+    validations:
+      required: true
+  - type: dropdown
+    id: trackpad
+    attributes:
+      label: Trackpad
+      options:
+        - Built-in MacBook trackpad
+        - Magic Trackpad
+        - Magic Trackpad 2 / USB-C
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Midpoint version
+      description: Shown in Finder → Get Info on Midpoint.app
+      placeholder: e.g. 0.3.0
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options: [Homebrew, curl installer, DMG, Built from source]
+  - type: textarea
+    id: log
+    attributes:
+      label: Debug log
+      description: Menu bar icon → Settings… → Open Debug Log. Paste the last ~20 lines.
+      render: text
