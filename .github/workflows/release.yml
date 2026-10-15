@@ -12,7 +12,7 @@ jobs:
   release:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check tag matches VERSION
         run: |
           if [ "v$(cat VERSION)" != "$GITHUB_REF_NAME" ]; then
