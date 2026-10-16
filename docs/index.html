@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Midpoint</title>
+  <meta name="description" content="Middle click on your Mac trackpad: a three-finger click or a three-finger tap. Free and open source.">
+  <link rel="canonical" href="https://midpoint.akhil.build/">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta property="og:title" content="Midpoint">
+  <meta property="og:description" content="Middle click on your Mac trackpad: a three-finger click or a three-finger tap.">
+  <meta property="og:url" content="https://midpoint.akhil.build/">
+  <meta property="og:image" content="https://midpoint.akhil.build/icon.png">
+  <style>
+    :root {
+      --bg: #f7f8fc;
+      --surface: #ffffff;
+      --text: #14162b;
+      --muted: #5b5f7a;
+      --border: #e2e4f0;
+      --accent: #3a4ce0;
+      --accent-text: #ffffff;
+      --code-bg: #eef0fb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1020;
+        --surface: #171a2e;
+        --text: #eceefa;
+        --muted: #9a9ec0;
+        --border: #2a2e4a;
+        --accent: #6b8aff;
+        --accent-text: #0e1020;
+        --code-bg: #1f2340;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: 680px; margin: 0 auto; padding: 72px 20px 48px; }
+    header { text-align: center; }
+    header img { width: 128px; height: 128px; }
+    h1 { font-size: 44px; line-height: 1.1; letter-spacing: -0.02em; margin: 16px 0 8px; }
+    .tagline { font-size: 20px; color: var(--muted); margin: 0 auto; max-width: 30em; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 32px 0 12px; }
+    .btn {
+      display: inline-block; padding: 11px 20px; border-radius: 10px;
+      font-weight: 600; text-decoration: none; border: 1px solid var(--border);
+      color: var(--text); background: var(--surface);
+    }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+    .btn:hover { filter: brightness(1.06); }
+    .small { font-size: 14px; color: var(--muted); text-align: center; margin: 0; }
+    .install {
+      display: flex; align-items: center; gap: 8px; margin: 28px auto 0; max-width: 520px;
+      background: var(--code-bg); border-radius: 10px; padding: 6px 6px 6px 16px;
+    }
+    .install code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font: 14px/1.4 ui-monospace, "SF Mono", Menlo, monospace; }
+    .install button {
+      flex: none; border: 0; border-radius: 7px; padding: 7px 12px; cursor: pointer;
+      font: 600 13px/1 inherit; font-family: inherit; background: var(--surface); color: var(--text);
+    }
+    section { margin-top: 64px; }
+    h2 { font-size: 22px; margin: 0 0 16px; }
+    ul.features { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+    ul.features li { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; }
+    ul.features strong { display: block; }
+    ul.features span { color: var(--muted); }
+    p { margin: 0 0 12px; }
+    a { color: var(--accent); }
+    footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); text-align: center; }
+    footer a { color: inherit; }
+    @media (max-width: 480px) {
+      main { padding: 48px 16px 32px; }
+      h1 { font-size: 36px; }
+      .tagline { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icon.png" alt="Midpoint icon" width="128" height="128">
+      <h1>Midpoint</h1>
+      <p class="tagline">Middle click on your Mac trackpad: a three-finger click or a three-finger tap.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/akhilmadipalli/midpoint/releases/latest/download/Midpoint.dmg">Download for Mac</a>
+        <a class="btn" href="https://github.com/akhilmadipalli/midpoint">View on GitHub</a>
+      </div>
+      <p class="small">Free and open source · macOS 14 Sonoma or later · Apple silicon and Intel</p>
+      <div class="install">
+        <code id="brew">brew install --cask akhilmadipalli/tap/midpoint</code>
+        <button type="button" id="copy">Copy</button>
+      </div>
+    </header>
+
+    <section>
+      <h2>What it does</h2>
+      <p>Midpoint is a small menu bar app that turns three fingers on your trackpad into a middle click. Open links in background tabs, close browser tabs, paste in Terminal, or pan in CAD apps without reaching for a mouse.</p>
+      <ul class="features">
+        <li><strong>Three-finger click</strong><span>Press the trackpad with three fingers for a middle click. Hold and drag for a middle-button drag.</span></li>
+        <li><strong>Three-finger tap</strong><span>A light three-finger tap sends a middle click too.</span></li>
+        <li><strong>Lightweight and private</strong><span>About 500 lines of Swift. No dependencies, no network access, no analytics.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Getting started</h2>
+      <p>On first launch, macOS asks for <strong>Accessibility</strong> access, which Midpoint needs to send middle clicks. Turn it on in System Settings → Privacy &amp; Security → Accessibility.</p>
+      <p>Midpoint isn't notarized yet, so if you download the DMG, macOS will say it “cannot verify” the app the first time. Click Done, then choose <strong>Open Anyway</strong> in System Settings → Privacy &amp; Security. Homebrew skips this step.</p>
+      <p>For gesture conflicts, troubleshooting, and how it works, see the <a href="https://github.com/akhilmadipalli/midpoint#readme">README</a>.</p>
+    </section>
+
+    <footer>
+      Made by <a href="https://akhil.build">Akhil Madipalli</a> · <a href="https://github.com/akhilmadipalli/midpoint/blob/main/LICENSE">MIT License</a>
+    </footer>
+  </main>
+  <script>
+    document.getElementById("copy").addEventListener("click", function () {
+      var btn = this;
+      var text = document.getElementById("brew").textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>
